@@ -331,6 +331,8 @@ struct mxt_vb2_buffer {
 	struct list_head	list;
 };
 
+static DEFINE_MUTEX(i2c_lock);
+
 static size_t mxt_obj_size(const struct mxt_object *obj)
 {
 	return obj->size_minus_one + 1;
@@ -628,7 +630,9 @@ static int __mxt_read_reg(struct i2c_client *client,
 	xfer[1].len = len;
 	xfer[1].buf = val;
 
+  mutex_lock(&i2c_lock);
 	ret = i2c_transfer(client->adapter, xfer, 2);
+  mutex_unlock(&i2c_lock);
 	if (ret == 2) {
 		ret = 0;
 	} else {
@@ -657,7 +661,9 @@ static int __mxt_write_reg(struct i2c_client *client, u16 reg, u16 len,
 	buf[1] = (reg >> 8) & 0xff;
 	memcpy(&buf[2], val, len);
 
+  mutex_lock(&i2c_lock);
 	ret = i2c_master_send(client, buf, count);
+  mutex_unlock(&i2c_lock);
 	if (ret == count) {
 		ret = 0;
 	} else {

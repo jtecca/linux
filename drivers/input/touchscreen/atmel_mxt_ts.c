@@ -615,6 +615,8 @@ static int __mxt_read_reg(struct i2c_client *client,
 	u8 buf[2];
 	int ret;
 
+  dev_dbg(&client->dev, "starting mxt_read_reg");
+
 	buf[0] = reg & 0xff;
 	buf[1] = (reg >> 8) & 0xff;
 
@@ -1009,6 +1011,8 @@ static irqreturn_t mxt_process_messages_t44(struct mxt_data *data)
 	struct device *dev = &data->client->dev;
 	int ret;
 	u8 count, num_left;
+
+  dev_dbg(dev, "process_msgs_t44");
 
 	/* Read T44 and T5 together */
 	ret = __mxt_read_reg(data->client, data->T44_address,
